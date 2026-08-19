@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armador de Horario ✏️ Editable</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>📅 Armador de Horario (Editable)</h1>
+
+    <div class="contenedor-principal">
+        <div class="panel-formulario">
+            <h2 id="titulo-form">➕ Agregar Curso</h2>
+            <form id="formCurso">
+                <input type="text" id="codigo" placeholder="Código (ej: DERE-741)" required>
+                <input type="text" id="nombre" placeholder="Nombre del curso" required>
+                <input type="text" id="profesor" placeholder="Profesor">
+                <input type="text" id="nrc" placeholder="NRC / Grupo">
+                <div class="fila">
+                    <select id="dia">
+                        <option value="LUN">Lunes</option>
+                        <option value="MAR">Martes</option>
+                        <option value="MIE">Miércoles</option>
+                        <option value="JUE">Jueves</option>
+                        <option value="VIE">Viernes</option>
+                        <option value="SAB">Sábado</option>
+                    </select>
+                    <input type="text" id="inicio" placeholder="Inicio ej: 7:00 AM">
+                    <input type="text" id="fin" placeholder="Fin ej: 8:45 AM">
+                </div>
+                <button type="submit" id="btnGuardar">💾 Guardar Curso</button>
+                <button type="button" id="btnCancelar" class="oculto">❌ Cancelar</button>
+            </form>
+        </div>
+
+        <div class="panel-cursos">
+            <h2>📚 Mis Cursos <span id="contador">(0)</span></h2>
+            <div id="listaCursos"></div>
+        </div>
+
+        <div class="panel-tabla">
+            <h2>📆 Horario Semanal</h2>
+            <table id="tablaHorario">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Lun</th>
+                        <th>Mar</th>
+                        <th>Mié</th>
+                        <th>Jue</th>
+                        <th>Vie</th>
+                        <th>Sáb</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
