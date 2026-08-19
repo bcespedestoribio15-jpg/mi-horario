@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f0f4f8;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: #2d3748;
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.contenedor-principal {
+    display: grid;
+    grid-template-columns: 320px 350px 1fr;
+    gap: 20px;
+}
+
+.panel-formulario, .panel-cursos, .panel-tabla {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.fila {
+    display: flex;
+    gap: 8px;
+}
+
+.fila input, .fila select {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+#btnGuardar { background: #3182ce; color: white; }
+#btnGuardar:hover { background: #2b6cb0; }
+#btnCancelar { background: #e2e8f0; color: #2d3748; }
+.oculto { display: none !important; }
+
+.curso-tarjeta {
+    background: #f7fafc;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid #3182ce;
+}
+
+.curso-tarjeta h3 { font-size: 14px; color: #2d3748; margin-bottom: 4px; }
+.curso-tarjeta p { font-size: 12px; color: #718096; margin-bottom: 8px; }
+
+.botones-accion { display: flex; gap: 6px; }
+.btn-editar { background: #f6e05e; color: #744210; padding: 5px; font-size: 12px; width: auto; }
+.btn-borrar { background: #fc8181; color: #742a2a; padding: 5px; font-size: 12px; width: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { border: 1px solid #e2e8f0; padding: 6px; text-align: center; height: 40px; }
+th { background: #edf2f7; color: #2d3748; }
+.entrada-horario { font-size: 11px; padding: 2px; border-radius: 3px; color: white; }
+.choque { background: #fed7d7 !important; border: 2px solid #e53e3e; }
