@@ -15,18 +15,35 @@ body {
 h1 {
     text-align: center;
     color: #2d3748;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
-h2 {
+h2, h3, h4 {
     color: #2d3748;
-    margin-bottom: 15px;
-    font-size: 18px;
+    margin-bottom: 10px;
 }
+
+.ayuda {
+    font-size: 13px;
+    color: #718096;
+    margin-bottom: 12px;
+}
+
+.alerta-choques {
+    background: #fff5f5;
+    border: 2px solid #fc8181;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    color: #c53030;
+    font-weight: 500;
+}
+
+.oculto { display: none !important; }
 
 .contenedor-principal {
     display: grid;
-    grid-template-columns: 320px 350px 1fr;
+    grid-template-columns: 340px 360px 1fr;
     gap: 20px;
 }
 
@@ -34,7 +51,7 @@ h2 {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
 form input, form select {
@@ -48,7 +65,7 @@ form input, form select {
 
 .fila {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .fila input, .fila select {
@@ -61,33 +78,68 @@ button {
     padding: 10px;
     border: none;
     border-radius: 6px;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
     margin-top: 5px;
 }
 
-#btnGuardar { background: #3182ce; color: white; }
-#btnGuardar:hover { background: #2b6cb0; }
-#btnCancelar { background: #e2e8f0; color: #2d3748; }
-.oculto { display: none !important; }
-
-.curso-tarjeta {
-    background: #f7fafc;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    border-left: 4px solid #3182ce;
+.btn-pdf {
+    background: #28a745;
+    color: white;
+    font-size: 16px;
+    padding: 12px 30px;
+    width: auto;
 }
 
-.curso-tarjeta h3 { font-size: 14px; color: #2d3748; margin-bottom: 4px; }
-.curso-tarjeta p { font-size: 12px; color: #718096; margin-bottom: 8px; }
+.btn-cerrar {
+    background: #e2e8f0;
+    color: #2d3748;
+    margin-top: 12px;
+}
 
-.botones-accion { display: flex; gap: 6px; }
-.btn-editar { background: #f6e05e; color: #744210; padding: 5px; font-size: 12px; width: auto; }
-.btn-borrar { background: #fc8181; color: #742a2a; padding: 5px; font-size: 12px; width: auto; }
+form button { background: #3182ce; color: white; }
 
+/* Tarjetas */
+.curso-bloque {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.curso-bloque h3 {
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.opcion-radio {
+    padding: 8px;
+    margin: 4px 0;
+    background: #f7fafc;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.opcion-radio:hover { background: #edf2f7; }
+.opcion-radio.seleccionada { background: #e6fffa; border-left: 3px solid #38b2ac; }
+.opcion-radio.choque { background: #fed7d7; border-left: 3px solid #e53e3e; }
+
+.btn-editar-sm, .btn-borrar-sm {
+    width: auto;
+    padding: 3px 6px;
+    font-size: 11px;
+    margin: 2px;
+}
+
+.btn-editar-sm { background: #f6e05e; color: #744210; }
+.btn-borrar-sm { background: #fc8181; color: #742a2a; }
+
+/* Tabla */
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th, td { border: 1px solid #e2e8f0; padding: 6px; text-align: center; height: 40px; }
 th { background: #edf2f7; color: #2d3748; }
 .entrada-horario { font-size: 11px; padding: 2px; border-radius: 3px; color: white; }
-.choque { background: #fed7d7 !important; border: 2px solid #e53e3e; }
+td.choque-celda { background: #fed7d7 !important; border: 2px solid #e53e3e; }
