@@ -3,43 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Armador de Horario ✏️ Editable</title>
+    <title>Armador de Horario Inteligente</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-    <h1>📅 Armador de Horario (Editable)</h1>
+    <h1>📅 Armador de Horario Inteligente</h1>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button id="btnDescargarPDF" class="btn-pdf">📄 Descargar Horario en PDF</button>
+    </div>
+
+    <!-- ⚠️ ALERTA DE CHOQUES -->
+    <div id="alertaChoques" class="alerta-choques oculto"></div>
 
     <div class="contenedor-principal">
+        <!-- PANEL 1: AGREGAR CURSO Y OPCIONES -->
         <div class="panel-formulario">
-            <h2 id="titulo-form">➕ Agregar Curso</h2>
+            <h2 id="tituloForm">➕ Agregar Curso Nuevo</h2>
             <form id="formCurso">
                 <input type="text" id="codigo" placeholder="Código (ej: DERE-741)" required>
-                <input type="text" id="nombre" placeholder="Nombre del curso" required>
-                <input type="text" id="profesor" placeholder="Profesor">
-                <input type="text" id="nrc" placeholder="NRC / Grupo">
-                <div class="fila">
-                    <select id="dia">
-                        <option value="LUN">Lunes</option>
-                        <option value="MAR">Martes</option>
-                        <option value="MIE">Miércoles</option>
-                        <option value="JUE">Jueves</option>
-                        <option value="VIE">Viernes</option>
-                        <option value="SAB">Sábado</option>
-                    </select>
-                    <input type="text" id="inicio" placeholder="Inicio ej: 7:00 AM">
-                    <input type="text" id="fin" placeholder="Fin ej: 8:45 AM">
-                </div>
-                <button type="submit" id="btnGuardar">💾 Guardar Curso</button>
-                <button type="button" id="btnCancelar" class="oculto">❌ Cancelar</button>
+                <input type="text" id="nombreCurso" placeholder="Nombre del curso" required>
+                <button type="submit" id="btnGuardarCurso">💾 Guardar Curso</button>
             </form>
+
+            <div id="panelOpciones" class="oculto">
+                <h3 id="nombreCursoActivo"></h3>
+                <h4>Agregar Opción / Grupo</h4>
+                <form id="formOpcion">
+                    <input type="text" id="profesor" placeholder="Profesor">
+                    <input type="text" id="nrc" placeholder="NRC / Grupo">
+                    <div class="fila">
+                        <select id="dia">
+                            <option value="LUN">Lunes</option>
+                            <option value="MAR">Martes</option>
+                            <option value="MIE">Miércoles</option>
+                            <option value="JUE">Jueves</option>
+                            <option value="VIE">Viernes</option>
+                            <option value="SAB">Sábado</option>
+                        </select>
+                        <input type="text" id="inicio" placeholder="Inicio ej: 7:00">
+                        <input type="text" id="fin" placeholder="Fin ej: 8:45">
+                    </div>
+                    <button type="submit">➕ Agregar Opción</button>
+                </form>
+                <div id="listaOpcionesCurso"></div>
+                <button id="btnCerrarCurso" class="btn-cerrar">✅ Terminar</button>
+            </div>
         </div>
 
+        <!-- PANEL 2: BIBLIOTECA DE CURSOS CON OPCIONES -->
         <div class="panel-cursos">
-            <h2>📚 Mis Cursos <span id="contador">(0)</span></h2>
-            <div id="listaCursos"></div>
+            <h2>📚 Biblioteca de Cursos</h2>
+            <p class="ayuda">Selecciona una opción por curso para armar tu horario</p>
+            <div id="listaBiblioteca"></div>
         </div>
 
-        <div class="panel-tabla">
+        <!-- PANEL 3: TABLA DE HORARIO -->
+        <div class="panel-tabla" id="areaPDF">
             <h2>📆 Horario Semanal</h2>
             <table id="tablaHorario">
                 <thead>
