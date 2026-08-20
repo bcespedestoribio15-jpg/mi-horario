@@ -5,19 +5,26 @@ let seleccion = {};
 // 🔑 Curso que se está editando en este momento
 let cursoActivoId = null;
 
-// ⏱️ BLOQUES DE HORA UNIVERSITARIA (45 min + 5 min cambio)
+// 🎨 PALETA DE COLORES ÚNICOS POR CURSO
+const colores = [
+    '#3182ce','#38a169','#d69e2e','#e53e3e','#9f7aea','#ed64a6',
+    '#4fd1c5','#2d3748','#805ad5','#f6ad55','#2f855a','#2b6cb0',
+    '#c53030','#b7791f','#2c5282','#1a365d','#234e52','#285e61'
+];
+let indiceColor = 0;
+
+// ⏱️ HORARIOS EXTENDIDOS HASTA LAS 10:30 PM
 const horasTabla = [
   "7:00", "7:50", "8:45", "9:40", "10:35", "11:30", "12:25",
   "1:20", "2:15", "3:10", "4:05", "5:00", "5:55",
-  "6:50", "7:45", "8:40", "9:35"
+  "6:50", "7:45", "8:40", "9:35", "10:30"
 ];
 const bloquesHora = {
     "7:00":0,"7:50":1,"8:45":2,"9:40":3,"10:35":4,"11:30":5,"12:25":6,
     "1:20":7,"2:15":8,"3:10":9,"4:05":10,"5:00":11,"5:55":12,
-    "6:50":13,"7:45":14,"8:40":15,"9:35":16
+    "6:50":13,"7:45":14,"8:40":15,"9:35":16,"10:30":17
 };
 const ordenDias = { LUN:0, MAR:1, MIE:2, JUE:3, VIE:4, SAB:5 };
-const colores = ['#3182ce','#38a169','#d69e2e','#e53e3e','#9f7aea','#ed64a6','#f6ad55','#4fd1c5'];
 
 // 💾 GUARDAR TODO automáticamente
 function guardarBiblioteca() {
@@ -26,21 +33,25 @@ function guardarBiblioteca() {
     renderizarTabla();
 }
 
-// 📝 AGREGAR CURSO NUEVO
+// 📝 AGREGAR CURSO NUEVO → COLOR ÚNICO AUTOMÁTICO
 document.getElementById('formCurso').addEventListener('submit', e => {
     e.preventDefault();
     cursoActivoId = Date.now();
+    
+    // 🎨 ASIGNA UN COLOR DIFERENTE A CADA CURSO
+    const colorAsignado = colores[indiceColor % colores.length];
+    indiceColor++;
+
     const nuevoCurso = {
         id: cursoActivoId,
         codigo: document.getElementById('codigo').value,
         nombre: document.getElementById('nombreCurso').value,
-        color: colores[Math.floor(Math.random()*colores.length)],
+        color: colorAsignado,
         opciones: []
     };
     biblioteca.push(nuevoCurso);
     guardarBiblioteca();
     
-    // Mostrar panel para agregar opciones
     document.getElementById('formCurso').classList.add('oculto');
     document.getElementById('panelOpciones').classList.remove('oculto');
     document.getElementById('nombreCursoActivo').textContent = nuevoCurso.codigo + " — " + nuevoCurso.nombre;
@@ -82,7 +93,7 @@ function renderizarOpcionesCursoActivo() {
     contenedor.innerHTML = "<p style='margin-top:8px;color:#38a169;'>✅ " + curso.opciones.length + " opción(es) agregada(s)</p>";
 }
 
-// 📚 BIBLIOTECA COMPLETA: lista cursos con opciones para elegir
+// 📚 BIBLIOTECA COMPLETA
 function renderizarBiblioteca() {
     const contenedor = document.getElementById('listaBiblioteca');
     contenedor.innerHTML = '';
@@ -121,16 +132,20 @@ function renderizarBiblioteca() {
     actualizarAlertaChoques();
 }
 
-// ✅ SELECCIONAR UNA OPCIÓN
+// ✅ SELECCIONAR → SE PINTA EN LA TABLA AL INSTANTE
 function seleccionarOpcion(cursoId, opcionId) {
     const curso = biblioteca.find(c => c.id === cursoId);
     const opcion = curso.opciones.find(o => o.id === opcionId);
     
-    // Si ya estaba seleccionada → la deselecciona
     if (seleccion[cursoId]?.id === opcionId) {
         delete seleccion[cursoId];
     } else {
-        seleccion[cursoId] = { ...opcion, codigo: curso.codigo, nombre: curso.nombre, color: curso.color };
+        seleccion[cursoId] = { 
+            ...opcion, 
+            codigo: curso.codigo, 
+            nombre: curso.nombre, 
+            color: curso.color // 🎨 MISMO COLOR DEL CURSO PARA TODAS SUS OPCIONES
+        };
     }
     
     guardarBiblioteca();
@@ -148,7 +163,6 @@ function verificarChoque(cursoNuevo, opcionNueva) {
         if (sel.dia !== diaN) continue;
         const iniS = bloquesHora[sel.inicio];
         const finS = bloquesHora[sel.fin];
-        // Si se traslapan los bloques → hay choque
         if (!(finN < iniS || finS < iniN)) return true;
     }
     return false;
@@ -189,7 +203,7 @@ function borrarCurso(id) {
     }
 }
 
-// 📆 DIBUJAR TABLA DEL HORARIO ARMADO
+// 📆 DIBUJAR TABLA
 function renderizarTabla() {
     const cuerpo = document.getElementById('cuerpoTabla');
     cuerpo.innerHTML = '';
@@ -200,7 +214,6 @@ function renderizarTabla() {
         cuerpo.appendChild(fila);
     });
 
-    // Colocar cada curso seleccionado
     for (const cid in seleccion) {
         const op = seleccion[cid];
         const col = ordenDias[op.dia] + 1;
@@ -208,32 +221,39 @@ function renderizarTabla() {
         const filaFin = bloquesHora[op.fin];
         const span = Math.max(1, filaFin - filaInicio + 1);
 
+        if (filaInicio === undefined) continue;
         const fila = cuerpo.children[filaInicio];
         if (!fila) continue;
         const celda = fila.children[col];
         celda.rowSpan = span;
-        celda.style.background = op.color;
+        celda.style.background = op.color; // 🎨 COLOR ÚNICO DEL CURSO
         celda.style.color = 'white';
-        celda.style.padding = '4px';
-        celda.style.fontSize = '11px';
-        celda.innerHTML = `<strong>${op.codigo}</strong><br>${op.inicio}-${op.fin}`;
+        celda.style.padding = '3px';
+        celda.style.fontSize = '10px';
+        celda.innerHTML = `<strong>${op.codigo}</strong><br>${op.inicio}`;
     }
 }
 
-// 📄 DESCARGAR EN PDF
+// 📄 DESCARGAR EN PDF → TODO EN UNA SOLA PÁGINA
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const elemento = document.getElementById('areaPDF');
     const opciones = {
-        margin: 10,
+        margin: 5,
         filename: 'Horario-Universidad.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        html2canvas: { scale: 1.6 },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a3',
+            orientation: 'landscape',
+            compress: true
+        },
+        pagebreak: { mode: 'avoid-all' }
     };
     html2pdf().set(opciones).from(elemento).save();
 });
 
-// 🚀 INICIAR TODO
+// 🚀 INICIAR
 renderizarBiblioteca();
 renderizarTabla();
-console.log('✅ ¡Sistema listo! Cursos con opciones + Choques + PDF');
+console.log('✅ Colores únicos por curso + Horario extendido + PDF en 1 página');
