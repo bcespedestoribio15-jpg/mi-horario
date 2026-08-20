@@ -1,8 +1,6 @@
 // 📂 BIBLIOTECA: Cursos con sus opciones múltiples
 let biblioteca = JSON.parse(localStorage.getItem('bibliotecaCursos')) || [];
-// ✅ Selección actual para armar horario
 let seleccion = {};
-// 🔑 Curso que se está editando en este momento
 let cursoActivoId = null;
 
 // 🎨 PALETA DE COLORES ÚNICOS POR CURSO
@@ -11,9 +9,8 @@ const colores = [
     '#4fd1c5','#2d3748','#805ad5','#f6ad55','#2f855a','#2b6cb0',
     '#c53030','#b7791f','#2c5282','#1a365d','#234e52','#285e61'
 ];
-let indiceColor = 0;
 
-// ⏱️ HORARIOS EXTENDIDOS HASTA LAS 10:30 PM
+// ⏱️ HORARIOS HASTA LAS 10:30 PM
 const horasTabla = [
   "7:00", "7:50", "8:45", "9:40", "10:35", "11:30", "12:25",
   "1:20", "2:15", "3:10", "4:05", "5:00", "5:55",
@@ -26,22 +23,18 @@ const bloquesHora = {
 };
 const ordenDias = { LUN:0, MAR:1, MIE:2, JUE:3, VIE:4, SAB:5 };
 
-// 💾 GUARDAR TODO automáticamente
+// 💾 GUARDAR Y ACTUALIZAR TODO
 function guardarBiblioteca() {
     localStorage.setItem('bibliotecaCursos', JSON.stringify(biblioteca));
     renderizarBiblioteca();
-    renderizarTabla();
+    renderizarTabla(); // 🔴 AQUÍ: Se actualiza la tabla SIEMPRE al guardar
 }
 
-// 📝 AGREGAR CURSO NUEVO → COLOR ÚNICO AUTOMÁTICO
+// 📝 AGREGAR CURSO NUEVO → COLOR ÚNICO
 document.getElementById('formCurso').addEventListener('submit', e => {
     e.preventDefault();
     cursoActivoId = Date.now();
-    
-    // 🎨 ASIGNA UN COLOR DIFERENTE A CADA CURSO
-    const colorAsignado = colores[indiceColor % colores.length];
-    indiceColor++;
-
+    const colorAsignado = colores[biblioteca.length % colores.length];
     const nuevoCurso = {
         id: cursoActivoId,
         codigo: document.getElementById('codigo').value,
@@ -59,7 +52,7 @@ document.getElementById('formCurso').addEventListener('submit', e => {
     e.target.reset();
 });
 
-// ➕ AGREGAR OPCIÓN AL CURSO ACTIVO
+// ➕ AGREGAR OPCIÓN
 document.getElementById('formOpcion').addEventListener('submit', e => {
     e.preventDefault();
     const opcion = {
@@ -70,7 +63,6 @@ document.getElementById('formOpcion').addEventListener('submit', e => {
         inicio: document.getElementById('inicio').value,
         fin: document.getElementById('fin').value
     };
-    
     const curso = biblioteca.find(c => c.id === cursoActivoId);
     curso.opciones.push(opcion);
     guardarBiblioteca();
@@ -78,7 +70,7 @@ document.getElementById('formOpcion').addEventListener('submit', e => {
     e.target.reset();
 });
 
-// ✅ CERRAR EDICIÓN DEL CURSO
+// ✅ CERRAR EDICIÓN
 document.getElementById('btnCerrarCurso').addEventListener('click', () => {
     cursoActivoId = null;
     document.getElementById('panelOpciones').classList.add('oculto');
@@ -86,14 +78,13 @@ document.getElementById('btnCerrarCurso').addEventListener('click', () => {
     document.getElementById('tituloForm').textContent = "➕ Agregar Curso Nuevo";
 });
 
-// 📋 Mostrar opciones del curso que se está agregando
 function renderizarOpcionesCursoActivo() {
     const curso = biblioteca.find(c => c.id === cursoActivoId);
     const contenedor = document.getElementById('listaOpcionesCurso');
     contenedor.innerHTML = "<p style='margin-top:8px;color:#38a169;'>✅ " + curso.opciones.length + " opción(es) agregada(s)</p>";
 }
 
-// 📚 BIBLIOTECA COMPLETA
+// 📚 BIBLIOTECA
 function renderizarBiblioteca() {
     const contenedor = document.getElementById('listaBiblioteca');
     contenedor.innerHTML = '';
@@ -132,26 +123,35 @@ function renderizarBiblioteca() {
     actualizarAlertaChoques();
 }
 
-// ✅ SELECCIONAR → SE PINTA EN LA TABLA AL INSTANTE
+// ✅ SELECCIONAR OPCIÓN → DEBE ACTUALIZAR LA TABLA
 function seleccionarOpcion(cursoId, opcionId) {
     const curso = biblioteca.find(c => c.id === cursoId);
     const opcion = curso.opciones.find(o => o.id === opcionId);
     
-    if (seleccion[cursoId]?.id === opcionId) {
+    // Si ya estaba seleccionada → deselecciona
+    if (seleccion[cursoId] && seleccion[cursoId].id === opcionId) {
         delete seleccion[cursoId];
     } else {
+        // Selecciona la nueva opción
         seleccion[cursoId] = { 
-            ...opcion, 
+            id: opcion.id,
             codigo: curso.codigo, 
             nombre: curso.nombre, 
-            color: curso.color // 🎨 MISMO COLOR DEL CURSO PARA TODAS SUS OPCIONES
+            color: curso.color,
+            profesor: opcion.profesor,
+            nrc: opcion.nrc,
+            dia: opcion.dia,
+            inicio: opcion.inicio,
+            fin: opcion.fin
         };
     }
     
-    guardarBiblioteca();
+    // 🔴 IMPORTANTE: Esto refresca TODO al hacer clic
+    renderizarBiblioteca();
+    renderizarTabla();
 }
 
-// ⚠️ VERIFICAR CHOQUES DE HORARIO
+// ⚠️ VERIFICAR CHOQUES
 function verificarChoque(cursoNuevo, opcionNueva) {
     const diaN = opcionNueva.dia;
     const iniN = bloquesHora[opcionNueva.inicio];
@@ -194,7 +194,7 @@ function actualizarAlertaChoques() {
     }
 }
 
-// 🗑️ BORRAR CURSO COMPLETO
+// 🗑️ BORRAR CURSO
 function borrarCurso(id) {
     if (confirm('¿Eliminar este curso y todas sus opciones?')) {
         biblioteca = biblioteca.filter(c => c.id !== id);
@@ -203,17 +203,21 @@ function borrarCurso(id) {
     }
 }
 
-// 📆 DIBUJAR TABLA
+// 📆 DIBUJAR LA TABLA DE HORARIO
 function renderizarTabla() {
     const cuerpo = document.getElementById('cuerpoTabla');
+    if (!cuerpo) return; // Evita errores si no existe
+    
     cuerpo.innerHTML = '';
     
+    // Crea las filas con las horas
     horasTabla.forEach(hora => {
         const fila = document.createElement('tr');
         fila.innerHTML = `<td><strong>${hora}</strong></td><td></td><td></td><td></td><td></td><td></td><td></td>`;
         cuerpo.appendChild(fila);
     });
 
+    // Dibuja cada curso seleccionado
     for (const cid in seleccion) {
         const op = seleccion[cid];
         const col = ordenDias[op.dia] + 1;
@@ -221,12 +225,12 @@ function renderizarTabla() {
         const filaFin = bloquesHora[op.fin];
         const span = Math.max(1, filaFin - filaInicio + 1);
 
-        if (filaInicio === undefined) continue;
+        if (filaInicio === undefined || !cuerpo.children[filaInicio]) continue;
+        
         const fila = cuerpo.children[filaInicio];
-        if (!fila) continue;
         const celda = fila.children[col];
         celda.rowSpan = span;
-        celda.style.background = op.color; // 🎨 COLOR ÚNICO DEL CURSO
+        celda.style.background = op.color;
         celda.style.color = 'white';
         celda.style.padding = '3px';
         celda.style.fontSize = '10px';
@@ -234,7 +238,7 @@ function renderizarTabla() {
     }
 }
 
-// 📄 DESCARGAR EN PDF → TODO EN UNA SOLA PÁGINA
+// 📄 DESCARGAR EN PDF UNA SOLA PÁGINA
 document.getElementById('btnDescargarPDF').addEventListener('click', () => {
     const elemento = document.getElementById('areaPDF');
     const opciones = {
@@ -242,18 +246,13 @@ document.getElementById('btnDescargarPDF').addEventListener('click', () => {
         filename: 'Horario-Universidad.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 1.6 },
-        jsPDF: { 
-            unit: 'mm', 
-            format: 'a3',
-            orientation: 'landscape',
-            compress: true
-        },
+        jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape', compress: true },
         pagebreak: { mode: 'avoid-all' }
     };
     html2pdf().set(opciones).from(elemento).save();
 });
 
-// 🚀 INICIAR
+// 🚀 INICIAR TODO
 renderizarBiblioteca();
 renderizarTabla();
-console.log('✅ Colores únicos por curso + Horario extendido + PDF en 1 página');
+console.log('✅ Sistema listo: selección dibuja en la tabla + horario 10:30 + PDF 1 página + colores únicos');
